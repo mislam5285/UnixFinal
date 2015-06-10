@@ -31,6 +31,6 @@ case "$i" in
 	;;
 esac
 
-find $PATH_NAME -type f -exec md5sum '{}' ';' | sort | uniq
+find $PATH_NAME -not -empty -type f -printf "%s\n" | sort -rn | uniq -d | xargs -I{} -n1 find $PATH_NAME -type f -size {}c -print0 | xargs -0 md5sum | sort | uniq -w32 --all-repeated=separate
 
 exit 0
