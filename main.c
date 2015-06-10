@@ -4,11 +4,11 @@
 #include<ctype.h>
 #include<string.h>
 
-int checkValidCommand(char *command, char *cmd[]){
+int checkValidCommand(char **command, char *cmd[]){
 	int i;
 	int match =0;
 	for (i = 0; i < 6; i++){
-		if(*cmd[i] == *command){ 
+		if(*cmd[i] == **command){ 
 			match =1;
 			break;
 		}
@@ -37,19 +37,20 @@ int main(){
 	char commandline[1024];
 	char *cmd[7] = {"cd", "cp", "ls", "date", "who", "cat", "exit"};
 	char *argv[3];
-	int match =0;
+	int match;
 	while(1){
 		printf("Enter command: ");
 		scanf("%s", commandline);
 	
 		cutCommand(commandline,argv);
 		
+		match =0;
 		match = checkValidCommand(argv, cmd);
 		if (match == 1){
 			printf("Valid Command! \n");
 		} else{
 			printf("Invalid Command! \n");
-			break;
+			continue;
 		}
 			
 	}
