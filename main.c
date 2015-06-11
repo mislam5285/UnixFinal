@@ -3,6 +3,7 @@
 #include<sys/types.h>
 #include<ctype.h>
 #include<string.h>
+#include<unistd.h>
 
 int checkValidCommand(char **command, char *cmd[]){
 	int i;
@@ -17,59 +18,69 @@ int checkValidCommand(char **command, char *cmd[]){
 	return match;	
 }
 
-void cutCommand(char *commandline, char **argv){
-	while (*commandline != '\0'){
-		while (*commandline == ' ' || *commandline == '\t' || *commandline == '\n'){
-			*commandline++ = '\0';
-		}
-		
-		*argv++ = commandline;
-		
-		while (*commandline != ' ' && *commandline != '\t' && *commandline != '\n' && *commandline != '\0'){
-			commandline++;
-		}
-	}
-	
-	*argv = '\0';
+
+void  cutCommand(char *line, char **argv)
+{
+     while (*line != '\0') {   
+          while (*line == ' ' || *line == '\t' || *line == '\n')
+               *line++ = '\0';     
+          *argv++ = line;          
+          while (*line != '\0' && *line != ' ' && *line != '\t' && *line != '\n') 
+               line++;             
+     }
+     *argv = '\0';
 }
 
-void execute(char **argv){
+void execute(char **prm){
 	pid_t pid;
 	int status;
-	if((pid=fork()) < 0){
-		printf("ERROR: FORK CHILD PROCESS FAILED! \n");
-		exit(EXIT_FAILURE);
-	} else if (pid == 0){
-		execvp(argv[0], argv);
-		printf("EXECUTE COMMAND FAILED! \n");
-	} else{
-		while (wait(&status) != pid);
+	if((strcmp(*prm, "exit") == 0)){ 
+			return;
+	}
+	if((strcmp(*prm, "cd") == 0)){ 
+		*prm++;
+		chdir(*prm);
+	}else{
+		if((pid=fork()) < 0){
+			printf("ERROR: FORK CHILD PROCESS FAILED! \n");
+			exit(EXIT_FAILURE);
+		} else if (pid == 0){
+			execvp(*prm, prm);
+			printf("EXECUTE COMMAND FAILED! \n");
+		} else{
+			while (wait(&status) != pid);
+		}
 	}
 }
+
+/*void execute_1(char **prm){
+
+}*/
 
 int main(){
 	char commandline[1024];
 	char *cmd[7] = {"cd", "cp", "ls", "date", "who", "cat", "exit"};
-	char *argv[3];
+	char *prm[4];
 	int match;
 	while(1){
 		printf("Enter command: ");
-		scanf("%s", commandline);
+		gets(commandline);
 	
-		cutCommand(commandline,argv);
+		cutCommand(commandline,prm);
+		
+		/*if((strcmp(*prm, "exit") == 0)){ 
+			return;
+		}*/
 		
 		match =0;
-		match = checkValidCommand(argv, cmd);
-		if (match == 1){
-			printf("\n");
-		} else{
-			printf("Invalid Command! \n");
-			continue;
+		match = checkValidCommand(prm, cmd);
+		if (match == 0){
+			printf("Command Not Build-in! \n");
+				//continue;
 		}
 		
-		execute(argv);
-			
-	}
+			execute(prm);
+		}	
 	
 	return 0;
 }
