@@ -2,9 +2,7 @@
 void execute(char **prm){
 	pid_t pid;
 	int status;
-	if((strcmp(*prm, "exit") == 0)){ 
-			return;
-	}
+	
 	if((strcmp(*prm, "cd") == 0)){ 
 		*prm++;
 		chdir(*prm);
