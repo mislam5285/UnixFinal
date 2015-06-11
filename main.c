@@ -54,7 +54,6 @@ void execute(char **prm){
 }
 
 /*void execute_1(char **prm){
-
 }*/
 
 int main(){
@@ -64,7 +63,7 @@ int main(){
 	int match;
 	while(1){
 		printf("Enter command: ");
-		gets(commandline);
+		fgets(commandline,sizeof(commandline),stdin);
 	
 		cutCommand(commandline,prm);
 		
@@ -78,7 +77,8 @@ int main(){
 			printf("Command Not Build-in! \n");
 				//continue;
 		}
-		
+		else if (strcmp(*prm, "exit") == 0)
+			exit(0);
 			execute(prm);
 		}	
 	
